@@ -39,11 +39,10 @@ CROSS="\u2718"
 LIGHTNING="\u26a1"
 GEAR="\u2699"
 
-# Colors
+# Config
+agnoster_theme_display_git_master_branch=0
 agnoster_theme_color_status=${agnoster_theme_color_status:=white}
-
-# Path
-agnoster_theme_shrink_path=1
+agnoster_theme_shrink_path=${agnoster_theme_shrink_path:=${+functions[shrink_path]}}
 
 # Begin a segment
 # Takes two arguments, background and foreground. Both can be omitted,
@@ -92,12 +91,16 @@ prompt_git() {
   }
   ref="$vcs_info_msg_0_"
   if [[ -n "$ref" ]]; then
+    if [[ $agnoster_theme_display_git_master_branch == 0 && "$ref" == "master" ]]; then
+      ref=""
+    else
+      ref+=" "
+    fi
     if is_dirty; then
       color=yellow
-      ref="${ref} $PLUSMINUS"
+      ref+="$PLUSMINUS"
     else
       color=green
-      ref="${ref} "
     fi
     if [[ "${ref/.../}" == "$ref" ]]; then
       ref="$BRANCH $ref"
@@ -111,7 +114,7 @@ prompt_git() {
 
 # Dir: current working directory
 prompt_dir() {
-  if [[ $agnoster_theme_shrink_path ]]; then
+  if [[ $agnoster_theme_shrink_path != 0 ]]; then
     prompt_segment blue $PRIMARY_FG " $(shrink_path -f) "
   else
     prompt_segment blue $PRIMARY_FG ' %~ '
