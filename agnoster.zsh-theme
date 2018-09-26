@@ -39,6 +39,9 @@ CROSS="\u2718"
 LIGHTNING="\u26a1"
 GEAR="\u2699"
 
+# Colors
+agnoster_theme_color_status=${agnoster_theme_color_status:=white}
+
 # Begin a segment
 # Takes two arguments, background and foreground. Both can be omitted,
 # rendering default background/foreground.
@@ -115,11 +118,11 @@ prompt_dir() {
 prompt_status() {
   local symbols
   symbols=()
-  [[ $RETVAL -ne 0 ]] && symbols+="%{%F{red}%}$CROSS"
+  [[ $RETVAL -ne 0 ]] && symbols+="%{%F{red}%}$CROSS $RETVAL"
   [[ $UID -eq 0 ]] && symbols+="%{%F{yellow}%}$LIGHTNING"
   [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}$GEAR"
 
-  [[ -n "$symbols" ]] && prompt_segment $PRIMARY_FG default " $symbols "
+  [[ -n "$symbols" ]] && prompt_segment $agnoster_theme_color_status $PRIMARY_FG " $symbols "
 }
 
 # Display current virtual environment
@@ -135,11 +138,11 @@ prompt_virtualenv() {
 prompt_agnoster_main() {
   RETVAL=$?
   CURRENT_BG='NONE'
-  prompt_status
   prompt_context
   prompt_virtualenv
   prompt_dir
   prompt_git
+  prompt_status
   prompt_end
 }
 
