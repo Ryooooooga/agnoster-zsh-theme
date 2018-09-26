@@ -42,6 +42,9 @@ GEAR="\u2699"
 # Colors
 agnoster_theme_color_status=${agnoster_theme_color_status:=white}
 
+# Path
+agnoster_theme_shrink_path=1
+
 # Begin a segment
 # Takes two arguments, background and foreground. Both can be omitted,
 # rendering default background/foreground.
@@ -108,7 +111,11 @@ prompt_git() {
 
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment blue $PRIMARY_FG ' %~ '
+  if [[ $agnoster_theme_shrink_path ]]; then
+    prompt_segment blue $PRIMARY_FG " $(shrink_path -f) "
+  else
+    prompt_segment blue $PRIMARY_FG ' %~ '
+  fi
 }
 
 # Status:
