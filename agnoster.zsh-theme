@@ -35,13 +35,16 @@ SEGMENT_SEPARATOR="\ue0b0"
 PLUSMINUS="\u00b1"
 BRANCH="\ue0a0"
 DETACHED="\u27a6"
+CHECKMARK="\u2713"
 CROSS="\u2718"
 LIGHTNING="\u26a1"
 GEAR="\u2699"
 
 # Config
-agnoster_theme_display_git_master_branch=0
-agnoster_theme_display_timediff=1
+agnoster_theme_display_git_master_branch=${agnoster_theme_display_git_master_branch:=0}
+agnoster_theme_display_timediff=${agnoster_theme_display_timediff:=1}
+agnoster_theme_display_status_success=${agnoster_theme_display_status_success:=0}
+agnoster_theme_newline_cursor=${agnoster_theme_newline_cursor:=0}
 agnoster_theme_color_dir_fg=${agnoster_theme_color_dir_fg:=$PRIMARY_FG}
 agnoster_theme_color_dir_bg=${agnoster_theme_color_dir_bg:=blue}
 agnoster_theme_color_status_bg=${agnoster_theme_color_status_bg:=white}
@@ -129,9 +132,19 @@ prompt_dir() {
 # - am I root
 # - are there background jobs?
 prompt_status() {
+  if [[ $agnoster_theme_newline_cursor != 0 ]]; then
+    prompt_end
+    print -n "\n"
+    CURRENT_BG=$agnoster_theme_color_status_bg
+  fi
+
   local symbols
   symbols=()
-  [[ $RETVAL -ne 0 ]] && symbols+="%{%F{red}%}$CROSS $RETVAL"
+  if [[ $RETVAL -ne 0 ]]; then
+    symbols+="%{%F{red}%}$CROSS $RETVAL"
+  elif [[ $agnoster_theme_display_status_success != 0 ]]; then
+    symbols+="%{%F{green}%}$CHECKMARK"
+  fi
   [[ $UID -eq 0 ]] && symbols+="%{%F{yellow}%}$LIGHTNING"
   [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}$GEAR"
 
