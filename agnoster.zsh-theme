@@ -41,7 +41,10 @@ GEAR="\u2699"
 
 # Config
 agnoster_theme_display_git_master_branch=0
-agnoster_theme_color_status=${agnoster_theme_color_status:=white}
+agnoster_theme_display_timediff=1
+agnoster_theme_color_dir_fg=${agnoster_theme_color_dir_fg:=$PRIMARY_FG}
+agnoster_theme_color_dir_bg=${agnoster_theme_color_dir_bg:=blue}
+agnoster_theme_color_status_bg=${agnoster_theme_color_status_bg:=white}
 agnoster_theme_shrink_path=${agnoster_theme_shrink_path:=${+functions[shrink_path]}}
 
 # Begin a segment
@@ -115,9 +118,9 @@ prompt_git() {
 # Dir: current working directory
 prompt_dir() {
   if [[ $agnoster_theme_shrink_path != 0 ]]; then
-    prompt_segment blue $PRIMARY_FG " $(shrink_path -f) "
+    prompt_segment $agnoster_theme_color_dir_bg $agnoster_theme_color_dir_fg " $(shrink_path -f) "
   else
-    prompt_segment blue $PRIMARY_FG ' %~ '
+    prompt_segment $agnoster_theme_color_dir_bg $agnoster_theme_color_dir_fg ' %~ '
   fi
 }
 
@@ -132,7 +135,7 @@ prompt_status() {
   [[ $UID -eq 0 ]] && symbols+="%{%F{yellow}%}$LIGHTNING"
   [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}$GEAR"
 
-  [[ -n "$symbols" ]] && prompt_segment $agnoster_theme_color_status $PRIMARY_FG " $symbols "
+  [[ -n "$symbols" ]] && prompt_segment $agnoster_theme_color_status_bg $PRIMARY_FG " $symbols "
 }
 
 # Display current virtual environment
@@ -141,6 +144,29 @@ prompt_virtualenv() {
     color=cyan
     prompt_segment $color $PRIMARY_FG
     print -Pn " $(basename $VIRTUAL_ENV) "
+  fi
+}
+
+# Display time diff
+prompt_timediff() {
+  local now elapsed
+  if [[ $agnoster_theme_display_timediff != 0 && -n "$agnoster_theme_internal_time" ]]; then
+    now=$(date +%s%N)
+    elapsed=$(( ($now - $agnoster_theme_internal_time) / 1000000 ))
+
+    print -n "%{%F{white}%}"
+    if [[ $elapsed -lt 100 ]]; then
+      printf "%.1fms" $(( $elapsed ))
+    elif [[ $elapsed -lt 1000 ]]; then
+      printf "%.0fms" $(( $elapsed ))
+    elif [[ $elapsed -lt 10000 ]]; then
+      printf "%.2fs" $(( $elapsed / 1000.0 ))
+    elif [[ $elapsed -lt 60000 ]]; then
+      printf "%.1fs" $(( $elapsed / 1000.0 ))
+    else
+      printf "%dm %02ds" $(( $elapsed / 60000 )) $(( $elapsed / 1000 % 60 ))
+    fi
+    print -n "%{%f%}"
   fi
 }
 
@@ -156,9 +182,20 @@ prompt_agnoster_main() {
   prompt_end
 }
 
+## Right prompt
+prompt_agnoster_right() {
+  prompt_timediff
+}
+
 prompt_agnoster_precmd() {
   vcs_info
+  RPROMPT=$(prompt_agnoster_right)
   PROMPT='%{%f%b%k%}$(prompt_agnoster_main) '
+  unset agnoster_theme_internal_time
+}
+
+prompt_agnoster_preexec() {
+  agnoster_theme_internal_time=$(date +%s%N)
 }
 
 prompt_agnoster_setup() {
@@ -168,6 +205,7 @@ prompt_agnoster_setup() {
   prompt_opts=(cr subst percent)
 
   add-zsh-hook precmd prompt_agnoster_precmd
+  add-zsh-hook preexec prompt_agnoster_preexec
 
   zstyle ':vcs_info:*' enable git
   zstyle ':vcs_info:*' check-for-changes false
