@@ -185,7 +185,6 @@ prompt_timediff() {
 
 ## Main prompt
 prompt_agnoster_main() {
-  RETVAL=$?
   CURRENT_BG='NONE'
   prompt_context
   prompt_virtualenv
@@ -201,6 +200,7 @@ prompt_agnoster_right() {
 }
 
 prompt_agnoster_precmd() {
+  RETVAL=$?
   vcs_info
   RPROMPT="$(prompt_agnoster_right)"
   PROMPT="%{%f%b%k%}$(prompt_agnoster_main) "
