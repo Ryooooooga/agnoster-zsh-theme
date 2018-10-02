@@ -202,8 +202,8 @@ prompt_agnoster_right() {
 
 prompt_agnoster_precmd() {
   vcs_info
-  RPROMPT=$(prompt_agnoster_right)
-  PROMPT='%{%f%b%k%}$(prompt_agnoster_main) '
+  RPROMPT="$(prompt_agnoster_right)"
+  PROMPT="%{%f%b%k%}$(prompt_agnoster_main) "
   unset agnoster_theme_internal_time
 }
 
