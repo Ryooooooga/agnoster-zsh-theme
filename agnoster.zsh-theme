@@ -48,6 +48,8 @@ agnoster_theme_display_status_success=${agnoster_theme_display_status_success:=0
 agnoster_theme_newline_cursor=${agnoster_theme_newline_cursor:=0}
 agnoster_theme_color_dir_fg=${agnoster_theme_color_dir_fg:=$PRIMARY_FG}
 agnoster_theme_color_dir_bg=${agnoster_theme_color_dir_bg:=blue}
+agnoster_theme_color_git_user_fg=${agnoster_theme_color_git_user_fg:=$PRIMARY_FG}
+agnoster_theme_color_git_user_bg=${agnoster_theme_color_git_user_bg:=cyan}
 agnoster_theme_color_status_bg=${agnoster_theme_color_status_bg:=white}
 agnoster_theme_shrink_path=${agnoster_theme_shrink_path:=${+functions[shrink_path]}}
 
@@ -103,9 +105,6 @@ prompt_git() {
     else
       ref+=" "
     fi
-    if [[ $agnoster_theme_display_git_user == 1 ]]; then
-      ref+="@$(git config user.name)"
-    fi
     if is_dirty; then
       color=yellow
       ref+="$PLUSMINUS"
@@ -119,6 +118,11 @@ prompt_git() {
     fi
     prompt_segment $color $PRIMARY_FG
     print -n " $ref"
+  fi
+
+  if [[ $agnoster_theme_display_git_user != 0 ]]; then
+    prompt_segment $agnoster_theme_color_git_user_bg $agnoster_theme_color_git_user_fg
+    print -n " @$(git config user.name) "
   fi
 }
 
