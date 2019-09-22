@@ -42,6 +42,7 @@ GEAR="\u2699"
 
 # Config
 agnoster_theme_display_git_master_branch=${agnoster_theme_display_git_master_branch:=0}
+agnoster_theme_display_git_user=${agnoster_theme_display_git_user:=1}
 agnoster_theme_display_timediff=${agnoster_theme_display_timediff:=1}
 agnoster_theme_display_status_success=${agnoster_theme_display_status_success:=0}
 agnoster_theme_newline_cursor=${agnoster_theme_newline_cursor:=0}
@@ -101,6 +102,9 @@ prompt_git() {
       ref=""
     else
       ref+=" "
+    fi
+    if [[ $agnoster_theme_display_git_user == 1 ]]; then
+      ref+="@$(git config user.name)"
     fi
     if is_dirty; then
       color=yellow
