@@ -118,11 +118,11 @@ prompt_git() {
     fi
     prompt_segment $color $PRIMARY_FG
     print -n " $ref"
-  fi
 
-  if [[ $agnoster_theme_display_git_user != 0 ]]; then
-    prompt_segment $agnoster_theme_color_git_user_bg $agnoster_theme_color_git_user_fg
-    print -n " @$(git config user.name) "
+    if [[ $agnoster_theme_display_git_user != 0 ]]; then
+      prompt_segment $agnoster_theme_color_git_user_bg $agnoster_theme_color_git_user_fg
+      print -n " @$(git config user.name) "
+    fi
   fi
 }
 
